@@ -26,6 +26,8 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uid;
 
+    private String fullName;
+
     private String email;
 
     private String password;
@@ -40,11 +42,13 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private LocalDate updatedAt;
 
+    @Enumerated(value = EnumType.STRING)
+    private Gender gender;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
-
 
     @Override
     public String getUsername() {
