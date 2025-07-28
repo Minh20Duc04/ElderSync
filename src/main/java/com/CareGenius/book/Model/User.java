@@ -1,5 +1,6 @@
 package com.CareGenius.book.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,6 +33,8 @@ public class User implements UserDetails {
 
     private String password;
 
+    private String address;
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "user_role")
     private Role role;
@@ -49,6 +52,15 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private CareSeeker careSeeker;
+
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private CareGiver careGiver;
 
     @Override
     public String getUsername() {

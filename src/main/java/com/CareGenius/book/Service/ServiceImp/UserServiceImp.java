@@ -48,10 +48,13 @@ public class UserServiceImp implements UserService {
         return User.builder()
                 .fullName(userDto.getFirstName() + " " + userDto.getLastName())
                 .email(userDto.getEmail())
+                .address(userDto.getAddress())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .role(Role.USER)
                 .gender(userDto.getGender())
                 .build();
     }
+
+
 
 }
