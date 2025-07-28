@@ -44,7 +44,7 @@ public class UserServiceImp implements UserService {
         return authenticatedUser;
     }
 
-    private User map(UserDto userDto) {
+    protected User map(UserDto userDto) {
         return User.builder()
                 .fullName(userDto.getFirstName() + " " + userDto.getLastName())
                 .email(userDto.getEmail())
@@ -54,6 +54,7 @@ public class UserServiceImp implements UserService {
                 .gender(userDto.getGender())
                 .build();
     }
+
 
 
 

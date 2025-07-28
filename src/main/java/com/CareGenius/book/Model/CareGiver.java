@@ -19,10 +19,6 @@ public class CareGiver {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uid;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "user_role")
-    private Role role;
-
     private LocalDate dob;
 
     private String phoneNumber;
@@ -37,14 +33,16 @@ public class CareGiver {
 
     private Double fee;
 
+    private String imageUrl;
+
     @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL)
     private Set<CareGiverSkill> skills;
 
     @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL)
     private Set<Certification> certifications;
 
-    private String imageUrl;
 
-    private Set<Schedule> daysOfWeek;
+    @OneToOne(mappedBy = "careGiver", cascade = CascadeType.ALL)
+    private Schedule schedule;
 
 }
