@@ -36,6 +36,10 @@ public class SecurityConfig {
                         .requestMatchers("/user/register",
                                 "/user/login"
                         ).permitAll()
+
+                        .requestMatchers("/caregivers/create",
+                                "/caregivers/linkImage")
+                        .hasRole("ADMIN")
                         .anyRequest().authenticated()
                 );
 

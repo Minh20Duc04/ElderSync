@@ -1,8 +1,10 @@
 package com.CareGenius.book.Service;
 
 import com.CareGenius.book.Dto.CareGiverDto;
-import com.CareGenius.book.Model.CareGiver;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface CareGiverService {
-    CareGiver createCareGiver(CareGiverDto careGiverDto);
+    CareGiverDto createCareGiver(CareGiverDto careGiverDto);
+
+    String linkImageToGiver(String giverUid, MultipartFile file);
 }

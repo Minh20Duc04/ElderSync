@@ -2,16 +2,18 @@ package com.CareGenius.book.Service.ServiceImp;
 
 import com.CareGenius.book.Dto.CareGiverDto;
 import com.CareGenius.book.Dto.CareGiverRequestDto;
-import com.CareGenius.book.Dto.UserDto;
 import com.CareGenius.book.Model.*;
 import com.CareGenius.book.Repository.CareGiverRepository;
-import com.CareGenius.book.Repository.CareGiverSkillRepository;
 import com.CareGenius.book.Repository.UserRepository;
 import com.CareGenius.book.Service.CareGiverService;
-import com.CareGenius.book.Service.UserService;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,10 +25,10 @@ public class CareGiverServiceImp implements CareGiverService {
     private final CareGiverRepository careGiverRepository;
     private final UserRepository userRepository;
     private final UserServiceImp userServiceImp;
-    private final CareGiverSkillRepository careGiverSkillRepository;
+    private final Cloudinary cloudinary;
 
     @Override
-    public CareGiver createCareGiver(CareGiverDto careGiverDto) {
+    public CareGiverDto createCareGiver(CareGiverDto careGiverDto) {
         boolean emailDB = userRepository.existsByEmail(careGiverDto.getUserDto().getEmail());
         boolean phoneDB = careGiverRepository.existsByPhoneNumber(careGiverDto.getCareGiverRequestDto().getPhoneNumber());
 
@@ -39,6 +41,7 @@ public class CareGiverServiceImp implements CareGiverService {
         userRepository.save(createUser);
 
         CareGiver careGiver = mapToCareGiver(careGiverDto.getCareGiverRequestDto());
+        careGiver.setUser(createUser);
 
         Set<CareGiverSkill> skills = careGiverDto.getSkills().stream()
                 .map((skill)->
@@ -63,10 +66,37 @@ public class CareGiverServiceImp implements CareGiverService {
 
         careGiver.setCertifications(certifications);
 
-        careGiver.setSchedule(careGiverDto.getSchedule());
+        Schedule schedule = careGiverDto.getSchedule();
+        checkValidSchedule(schedule);
 
-        return careGiverRepository.save(careGiver);
+        schedule.setCareGiver(careGiver);
+        careGiver.setSchedule(schedule);
+
+        careGiverRepository.save(careGiver);
+        return careGiverDto;
     }
+
+    @Override
+    public String linkImageToGiver(String giverUid, MultipartFile file) {
+        CareGiver careGiverDB = careGiverRepository.findById(giverUid).orElseThrow(()-> new IllegalArgumentException("No givers foudn"));
+        String linkImageUrl = uploadFile(file);
+        careGiverDB.setImageUrl(linkImageUrl);
+        careGiverRepository.save(careGiverDB);
+        return "Save image successfully";
+    }
+
+    private void checkValidSchedule(Schedule schedule){
+        if(schedule.getDayOfWeeks() == null || schedule.getDayOfWeeks().isEmpty()){
+            throw new IllegalArgumentException("Schedule must have at least one day");
+        }
+        if(schedule.getStartTime() == null || schedule.getEndTime() == null){
+            throw new IllegalArgumentException("StartTime and EndTime must not be null");
+        }
+        if(schedule.getStartTime().isAfter(schedule.getEndTime())){
+            throw new IllegalArgumentException("StartTime must be before EndTime");
+        }
+    }
+
 
     private CareGiver mapToCareGiver(CareGiverRequestDto careGiverRequestDto) {
         return CareGiver.builder()
@@ -78,9 +108,12 @@ public class CareGiverServiceImp implements CareGiverService {
                 .build();
     }
 
-    private String uploadFile(String imageUrl) {
-
+    private String uploadFile(MultipartFile file) {
+        try{
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+            return uploadResult.get("secure_url").toString();
+        }catch (IOException e){
+            throw new RuntimeException("Lỗi khi upload file: " + e.getMessage());
+        }
     }
-
-
 }
