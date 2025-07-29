@@ -8,10 +8,8 @@ import com.CareGenius.book.Service.CareGiverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/caregivers")
@@ -22,8 +20,14 @@ public class CareGiverController {
     private final CareGiverService careGiverService;
 
     @PostMapping("/create")
-    public ResponseEntity<CareGiver> createCareGiver(@RequestBody CareGiverDto careGiverDto){
+    public ResponseEntity<CareGiverDto> createCareGiver(@RequestBody CareGiverDto careGiverDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(careGiverService.createCareGiver(careGiverDto));
     }
+
+    @PostMapping("/linkImage")
+    public ResponseEntity<String> linkImageToGiver(@RequestParam String giverUid, @RequestParam MultipartFile file){
+        return ResponseEntity.ok(careGiverService.linkImageToGiver(giverUid, file));
+    }
+
 
 }

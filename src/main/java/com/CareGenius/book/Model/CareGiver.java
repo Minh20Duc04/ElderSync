@@ -1,4 +1,5 @@
 package com.CareGenius.book.Model;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,13 +37,16 @@ public class CareGiver {
     private String imageUrl;
 
     @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<CareGiverSkill> skills;
 
     @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<Certification> certifications;
 
 
     @OneToOne(mappedBy = "careGiver", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Schedule schedule;
 
 }

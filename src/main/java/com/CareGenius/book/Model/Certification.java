@@ -1,6 +1,7 @@
 package com.CareGenius.book.Model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Certification {
 
     @ManyToOne
     @JoinColumn(name = "care_giver_uid")
+    @JsonBackReference
     private CareGiver careGiver;
 
     private String certificateName;
