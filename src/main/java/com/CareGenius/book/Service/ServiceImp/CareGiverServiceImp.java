@@ -2,6 +2,8 @@ package com.CareGenius.book.Service.ServiceImp;
 
 import com.CareGenius.book.Dto.CareGiverDto;
 import com.CareGenius.book.Dto.CareGiverRequestDto;
+import com.CareGenius.book.Dto.CertificationDto;
+import com.CareGenius.book.Dto.UserDto;
 import com.CareGenius.book.Model.*;
 import com.CareGenius.book.Repository.CareGiverRepository;
 import com.CareGenius.book.Repository.UserRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,7 +88,51 @@ public class CareGiverServiceImp implements CareGiverService {
         return "Save image successfully";
     }
 
-    private void checkValidSchedule(Schedule schedule){
+    @Override
+    public CareGiverDto getByUid(String uid) {
+        CareGiver careGiverDB = careGiverRepository.findById(uid).orElseThrow(()-> new IllegalArgumentException("Can not find giver with this uid"));
+        return mapToCareGiverDto(careGiverDB);
+    }
+
+    private CareGiverDto mapToCareGiverDto(CareGiver careGiverDB) {
+        return new CareGiverDto(
+                new UserDto(careGiverDB.getUser().getFullName(),
+                        "",
+                        "",
+                        careGiverDB.getUser().getEmail(),
+                        "",
+                        careGiverDB.getUser().getGender()
+                ),
+                new CareGiverRequestDto(careGiverDB.getDob(),
+                        careGiverDB.getPhoneNumber(),
+                        careGiverDB.getYearExperience(),
+                        careGiverDB.getFee(),
+                        careGiverDB.getBio()
+                        ),
+                mapToCareNeed(careGiverDB.getSkills()),
+                mapToCareGiverCert(careGiverDB.getCertifications()),
+                careGiverDB.getSchedule()
+        );
+    }
+
+    private List<CertificationDto> mapToCareGiverCert(Set<Certification> certifications) {
+        List<CertificationDto> certificationDtos = certifications.stream().map((cert)->
+                new CertificationDto(cert.getCertificateName(), cert.getIssueDate(), cert.getExpirationDate(), cert.getIssuer())).collect(Collectors.toList());
+        return certificationDtos;
+    }
+
+    private List<CareNeed> mapToCareNeed(Set<CareGiverSkill> skills) {
+        List<CareNeed> careNeeds = skills.stream().map((skill)->
+                skill.getSkillName()).collect(Collectors.toList());
+        return careNeeds;
+    }
+
+    @Override
+    public List<CareGiverDto> getAll() {
+        return careGiverRepository.findAll().stream().map(this::mapToCareGiverDto).collect(Collectors.toList());
+    }
+
+    public void checkValidSchedule(Schedule schedule){
         if(schedule.getDayOfWeeks() == null || schedule.getDayOfWeeks().isEmpty()){
             throw new IllegalArgumentException("Schedule must have at least one day");
         }
@@ -116,4 +163,9 @@ public class CareGiverServiceImp implements CareGiverService {
             throw new RuntimeException("Lỗi khi upload file: " + e.getMessage());
         }
     }
+
+
+
+
+
 }
