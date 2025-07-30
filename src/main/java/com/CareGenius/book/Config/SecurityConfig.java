@@ -34,12 +34,19 @@ public class SecurityConfig {
 
                         //ko cần role
                         .requestMatchers("/user/register",
-                                "/user/login"
+                                "/user/login",
+                                "/caregivers/getAll",
+                                "/caregivers/getByUid/**"
                         ).permitAll()
+
+                        .requestMatchers("/care-seekers/create")
+                        .hasRole("USER")
 
                         .requestMatchers("/caregivers/create",
                                 "/caregivers/linkImage")
                         .hasRole("ADMIN")
+
+
                         .anyRequest().authenticated()
                 );
 
