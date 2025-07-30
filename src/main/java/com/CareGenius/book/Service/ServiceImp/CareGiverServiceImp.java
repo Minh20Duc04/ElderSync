@@ -1,9 +1,6 @@
 package com.CareGenius.book.Service.ServiceImp;
 
-import com.CareGenius.book.Dto.CareGiverDto;
-import com.CareGenius.book.Dto.CareGiverRequestDto;
-import com.CareGenius.book.Dto.CertificationDto;
-import com.CareGenius.book.Dto.UserDto;
+import com.CareGenius.book.Dto.*;
 import com.CareGenius.book.Model.*;
 import com.CareGenius.book.Repository.CareGiverRepository;
 import com.CareGenius.book.Repository.UserRepository;
@@ -15,9 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,30 +84,43 @@ public class CareGiverServiceImp implements CareGiverService {
     }
 
     @Override
-    public CareGiverDto getByUid(String uid) {
-        CareGiver careGiverDB = careGiverRepository.findById(uid).orElseThrow(()-> new IllegalArgumentException("Can not find giver with this uid"));
-        return mapToCareGiverDto(careGiverDB);
+    public CareGiverResponseDto getByUid(String uid) {
+        CareGiver careGiverDB = careGiverRepository.findById(uid).orElseThrow(()-> new IllegalArgumentException("CareGiver not found with uid: " + uid));
+        return mapToCareGiverSimpleDto(careGiverDB);
     }
 
-    private CareGiverDto mapToCareGiverDto(CareGiver careGiverDB) {
-        return new CareGiverDto(
-                new UserDto(careGiverDB.getUser().getFullName(),
-                        "",
-                        "",
-                        careGiverDB.getUser().getEmail(),
-                        "",
-                        careGiverDB.getUser().getGender()
-                ),
-                new CareGiverRequestDto(careGiverDB.getDob(),
-                        careGiverDB.getPhoneNumber(),
-                        careGiverDB.getYearExperience(),
-                        careGiverDB.getFee(),
-                        careGiverDB.getBio()
-                        ),
-                mapToCareNeed(careGiverDB.getSkills()),
-                mapToCareGiverCert(careGiverDB.getCertifications()),
-                careGiverDB.getSchedule()
+    @Override
+    public List<CareGiverResponseDto> getAll() {
+        return careGiverRepository.findAll().stream()
+                .map(this::mapToCareGiverSimpleDto).collect(Collectors.toList());
+    }
+
+    private CareGiverResponseDto mapToCareGiverSimpleDto(CareGiver careGiverDB) {
+        Set<String> skills = new HashSet<>();
+
+        careGiverDB.getSkills().forEach((skillDB)->skills.add(skillDB.getSkillName().name()));
+
+        Set<String> certs = new HashSet<>();
+        careGiverDB.getCertifications().forEach((cert)-> certs.add(cert.getCertificateName()));
+
+        ScheduleDto scheduleDto = mapToScheduleDto(careGiverDB.getSchedule());
+
+        return new CareGiverResponseDto(
+                careGiverDB.getUid(),
+                careGiverDB.getUser().getFullName(),
+                careGiverDB.getUser().getGender().name(),
+                careGiverDB.getImageUrl(),
+                careGiverDB.getYearExperience(),
+                careGiverDB.getFee(),
+                careGiverDB.getBio(),
+                skills,
+                certs,
+                scheduleDto
         );
+    }
+
+    private ScheduleDto mapToScheduleDto(Schedule schedule) {
+        return new ScheduleDto(schedule.getDayOfWeeks(),schedule.getStartTime(), schedule.getEndTime());
     }
 
     private List<CertificationDto> mapToCareGiverCert(Set<Certification> certifications) {
@@ -125,11 +133,6 @@ public class CareGiverServiceImp implements CareGiverService {
         List<CareNeed> careNeeds = skills.stream().map((skill)->
                 skill.getSkillName()).collect(Collectors.toList());
         return careNeeds;
-    }
-
-    @Override
-    public List<CareGiverDto> getAll() {
-        return careGiverRepository.findAll().stream().map(this::mapToCareGiverDto).collect(Collectors.toList());
     }
 
     public void checkValidSchedule(Schedule schedule){

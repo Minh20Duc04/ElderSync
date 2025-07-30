@@ -2,8 +2,7 @@ package com.CareGenius.book.Controller;
 
 
 import com.CareGenius.book.Dto.CareGiverDto;
-import com.CareGenius.book.Dto.CareGiverRequestDto;
-import com.CareGenius.book.Model.CareGiver;
+import com.CareGenius.book.Dto.CareGiverResponseDto;
 import com.CareGenius.book.Service.CareGiverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,14 +30,14 @@ public class CareGiverController {
         return ResponseEntity.ok(careGiverService.linkImageToGiver(giverUid, file));
     }
 
-    @GetMapping("/getByUid/{uid}")
-    public ResponseEntity<CareGiverDto> getByUid(@PathVariable("uid") String uid){
-        return ResponseEntity.ok(careGiverService.getByUid(uid));
+    @GetMapping("/getAll")
+    public ResponseEntity<List<CareGiverResponseDto>> getAllCareGivers() {
+        return ResponseEntity.ok(careGiverService.getAll());
     }
 
-    @GetMapping("/getAll")
-    public ResponseEntity<List<CareGiverDto>> getByUid(){
-        return ResponseEntity.ok(careGiverService.getAll());
+    @GetMapping("/getByUid/{uid}")
+    public ResponseEntity<CareGiverResponseDto> getCareGiverById(@PathVariable String uid) {
+        return ResponseEntity.ok(careGiverService.getByUid(uid));
     }
 
 
