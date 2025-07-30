@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/caregivers")
 @RequiredArgsConstructor
@@ -27,6 +29,16 @@ public class CareGiverController {
     @PostMapping("/linkImage")
     public ResponseEntity<String> linkImageToGiver(@RequestParam String giverUid, @RequestParam MultipartFile file){
         return ResponseEntity.ok(careGiverService.linkImageToGiver(giverUid, file));
+    }
+
+    @GetMapping("/getByUid/{uid}")
+    public ResponseEntity<CareGiverDto> getByUid(@PathVariable("uid") String uid){
+        return ResponseEntity.ok(careGiverService.getByUid(uid));
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<CareGiverDto>> getByUid(){
+        return ResponseEntity.ok(careGiverService.getAll());
     }
 
 
