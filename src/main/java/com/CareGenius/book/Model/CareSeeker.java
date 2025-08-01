@@ -25,12 +25,12 @@ public class CareSeeker {
 
     private String phoneNumber;
 
-    @ElementCollection(targetClass = CareNeed.class)
+    @ElementCollection(targetClass = CareNeed.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "care_needs_description", joinColumns = @JoinColumn(name = "care_seeker_uid"))
     @Enumerated(value = EnumType.STRING)
     private Set<CareNeed> careNeedsDescription;
 
-    @ElementCollection(targetClass = HealthCondition.class)
+    @ElementCollection(targetClass = HealthCondition.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "health_conditions", joinColumns = @JoinColumn(name = "care_seeker_uid"))
     @Enumerated(value = EnumType.STRING)
     private Set<HealthCondition> healthConditions;
@@ -42,7 +42,7 @@ public class CareSeeker {
     @JoinColumn(name = "user_uid")
     private User user;
 
-    @OneToMany(mappedBy = "careSeeker", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "careSeeker", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<AIRecommendation> recommendations;
 
 }

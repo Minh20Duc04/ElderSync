@@ -43,9 +43,13 @@ public class SecurityConfig {
                         .requestMatchers("/care-seekers/create")
                         .hasRole("USER")
 
+                        .requestMatchers("/ai-recommend/match")
+                        .hasRole("SEEKER")
+
                         .requestMatchers("/caregivers/create",
                                 "/caregivers/linkImage")
                         .hasRole("ADMIN")
+
 
 
                         .anyRequest().authenticated()

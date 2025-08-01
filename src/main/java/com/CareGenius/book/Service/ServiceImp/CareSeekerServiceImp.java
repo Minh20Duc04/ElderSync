@@ -7,6 +7,7 @@ import com.CareGenius.book.Model.Role;
 import com.CareGenius.book.Model.User;
 import com.CareGenius.book.Repository.CareSeekerRepository;
 import com.CareGenius.book.Repository.UserRepository;
+import com.CareGenius.book.Service.AIRecommendationService;
 import com.CareGenius.book.Service.CareSeekerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class CareSeekerServiceImp implements CareSeekerService {
 
     private final CareSeekerRepository careSeekerRepository;
     private final UserRepository userRepository;
+    private final AIRecommendationService aiRecommendationService;
 
     @Override
     public CareSeekerResponseDto createCareSeeker(User userDB, CareSeekerRequestDto careSeekerRequestDto) {

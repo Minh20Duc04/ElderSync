@@ -37,11 +37,11 @@ public class CareGiver {
 
     private String imageUrl;
 
-    @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     private Set<CareGiverSkill> skills;
 
-    @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonManagedReference
     private Set<Certification> certifications;
 
@@ -50,7 +50,7 @@ public class CareGiver {
     @JsonManagedReference
     private Schedule schedule;
 
-    @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<AIRecommendation> recommendations;
 
 }
