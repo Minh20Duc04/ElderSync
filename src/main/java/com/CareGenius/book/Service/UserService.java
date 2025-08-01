@@ -9,4 +9,6 @@ public interface UserService {
     User register(UserDto userDto);
 
     Map<String, Object> authenticateUser(UserDto userDto);
+
+    String sendResetPasswordEmail(String email);
 }
