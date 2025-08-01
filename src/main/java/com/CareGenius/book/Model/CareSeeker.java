@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -40,5 +41,8 @@ public class CareSeeker {
     @OneToOne
     @JoinColumn(name = "user_uid")
     private User user;
+
+    @OneToMany(mappedBy = "careSeeker", cascade = CascadeType.ALL)
+    private List<AIRecommendation> recommendations;
 
 }

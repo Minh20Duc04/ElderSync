@@ -1,6 +1,7 @@
 package com.CareGenius.book.Service.ServiceImp;
 
 import com.CareGenius.book.Dto.UserDto;
+import com.CareGenius.book.Dto.UserResponseDto;
 import com.CareGenius.book.Model.Role;
 import com.CareGenius.book.Model.User;
 import com.CareGenius.book.Repository.UserRepository;
@@ -42,16 +43,23 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public Map<String, Object> authenticateUser(UserDto userDto) {
-        Map<String, Object> authenticatedUser = new HashMap<>();
+    public UserResponseDto authenticateUser(UserDto userDto) {
         User userDB = (User) userDetailsService.loadUserByUsername(userDto.getEmail());
         if(userDB == null){
             throw new IllegalArgumentException("Can not find User with this email " +userDto.getEmail());
         }
         manager.authenticate(new UsernamePasswordAuthenticationToken(userDto.getEmail(), userDto.getPassword()));
-        authenticatedUser.put("token", "Bearer".concat(jwtService.generateToken(userDto.getEmail())));
-        authenticatedUser.put("user", userDB);
-        return authenticatedUser;
+        String token = "Bearer ".concat(jwtService.generateToken(userDto.getEmail()));
+
+        return new UserResponseDto(
+                token,
+                userDB.getUid(),
+                userDB.getFullName(),
+                userDB.getAddress(),
+                userDB.getEmail(),
+                userDB.getGender().name(),
+                userDB.getRole().name()
+        );
     }
 
     @Override
@@ -71,12 +79,12 @@ public class UserServiceImp implements UserService {
 
         StringBuilder stringBuild = new StringBuilder();
 
-        for(int i=1; i<= 10; ++i){
+        for(int i=1; i< 10; ++i){
             int newChar = rand.nextInt(keyboardChars.length);
             stringBuild.append(keyboardChars[newChar]);
         }
 
-        userDB.setPassword(stringBuild.toString());
+        userDB.setPassword(passwordEncoder.encode(stringBuild.toString()));
         userRepository.save(userDB);
 
         sendEmail(email, stringBuild.toString());

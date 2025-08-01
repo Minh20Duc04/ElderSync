@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -48,5 +49,8 @@ public class CareGiver {
     @OneToOne(mappedBy = "careGiver", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Schedule schedule;
+
+    @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL)
+    private List<AIRecommendation> recommendations;
 
 }
