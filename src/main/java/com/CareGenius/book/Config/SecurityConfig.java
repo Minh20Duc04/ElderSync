@@ -36,7 +36,8 @@ public class SecurityConfig {
                         .requestMatchers("/user/register",
                                 "/user/login",
                                 "/caregivers/getAll",
-                                "/caregivers/getByUid/**"
+                                "/caregivers/getByUid/**",
+                                "/user/forgot-password/**"
                         ).permitAll()
 
                         .requestMatchers("/care-seekers/create")

@@ -1,6 +1,7 @@
 package com.CareGenius.book.Controller;
 
 import com.CareGenius.book.Dto.UserDto;
+import com.CareGenius.book.Dto.UserResponseDto;
 import com.CareGenius.book.Model.User;
 import com.CareGenius.book.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto userDto){
-        var authenticatedUser = userService.authenticateUser(userDto);
+    public ResponseEntity<UserResponseDto> login(@RequestBody UserDto userDto) {
+        var userResponseDto = userService.authenticateUser(userDto);
         return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, (String) authenticatedUser.get("token"))
-                .body(authenticatedUser.get("user"));
+                .header(HttpHeaders.AUTHORIZATION, userResponseDto.getToken())
+                .body(userResponseDto);
     }
 
     @PostMapping("/forgot-password")
