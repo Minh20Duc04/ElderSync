@@ -23,7 +23,7 @@ public class CareGiverSkill {
 
     @ManyToOne
     @JoinColumn(name = "care_giver_uid")
-    @JsonBackReference
+    @JsonBackReference("skills-reference")
     private CareGiver careGiver;
 
 }

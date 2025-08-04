@@ -38,20 +38,20 @@ public class CareGiver {
     private String imageUrl;
 
     @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference("skills-reference")
     private Set<CareGiverSkill> skills;
 
     @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference("certifications-reference")
     private Set<Certification> certifications;
 
 
     @OneToOne(mappedBy = "careGiver", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference("schedule-reference")
     private Schedule schedule;
 
     @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonManagedReference
+    @JsonManagedReference("recommendations-reference")
     private List<AIRecommendation> recommendations;
 
 }

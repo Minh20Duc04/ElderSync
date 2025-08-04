@@ -32,7 +32,7 @@ public class AIRecommendation {
 
     @ManyToOne
     @JoinColumn(name = "care_giver_uid")
-    @JsonBackReference
+    @JsonBackReference("recommendations-reference")
     private CareGiver careGiver;
 
     @CreationTimestamp

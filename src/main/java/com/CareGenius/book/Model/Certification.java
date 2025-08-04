@@ -23,7 +23,7 @@ public class Certification {
 
     @ManyToOne
     @JoinColumn(name = "care_giver_uid")
-    @JsonBackReference
+    @JsonBackReference("certifications-reference")
     private CareGiver careGiver;
 
     private String certificateName;

@@ -24,7 +24,7 @@ public class Schedule {
 
     @OneToOne
     @JoinColumn(name = "care_giver_uid")
-    @JsonBackReference
+    @JsonBackReference("schedule-reference")
     private CareGiver careGiver;
 
     @ElementCollection(targetClass = DayOfWeek.class)

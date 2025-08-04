@@ -57,10 +57,13 @@ public class User implements UserDetails {
     @JsonIgnore
     private CareSeeker careSeeker;
 
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private CareGiver careGiver;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Notifications> notifications;
 
     @Override
     public String getUsername() {
