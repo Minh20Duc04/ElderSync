@@ -51,6 +51,7 @@ public class CareGiver {
     private Schedule schedule;
 
     @OneToMany(mappedBy = "careGiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<AIRecommendation> recommendations;
 
 }

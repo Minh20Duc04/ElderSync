@@ -1,5 +1,6 @@
 package com.CareGenius.book.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -26,10 +27,12 @@ public class AIRecommendation {
 
     @ManyToOne
     @JoinColumn(name = "care_seeker_uid")
+    @JsonBackReference
     private CareSeeker careSeeker;
 
     @ManyToOne
     @JoinColumn(name = "care_giver_uid")
+    @JsonBackReference
     private CareGiver careGiver;
 
     @CreationTimestamp

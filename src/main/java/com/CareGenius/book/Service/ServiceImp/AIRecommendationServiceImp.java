@@ -11,6 +11,9 @@ import com.CareGenius.book.Repository.CareGiverSkillRepository;
 import com.CareGenius.book.Repository.CareSeekerRepository;
 import com.CareGenius.book.Service.AIRecommendationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 
 public class AIRecommendationServiceImp implements AIRecommendationService {
 
@@ -31,10 +35,13 @@ public class AIRecommendationServiceImp implements AIRecommendationService {
     private final CareGiverSkillRepository careGiverSkillRepository;
     private final AppConfig appConfig;
 
+    private Logger logging = LoggerFactory.getLogger(AIRecommendationServiceImp.class);
+
 
     @Override
     @Transactional
     public List<CareGiver> AIRecommendationMatching(CareSeeker careSeeker) {
+
         List<CareGiver> giversDB = careGiverRepository.findAll();
         List<CareGiver> giversSuitable = new ArrayList<>();
 
@@ -70,7 +77,10 @@ public class AIRecommendationServiceImp implements AIRecommendationService {
             if(checkSuitable(careSeeker.getUser().getAddress(), giverAddress, "address")){
                 pointEarned += 20;
             }
-            if(pointEarned >= 0){
+
+            logging.info("The points found: " + pointEarned);
+
+            if(pointEarned >= 60){
                 giversSuitable.add(giverDB);
                 aiRecommendationRepository.save(
                         AIRecommendation.builder()
@@ -89,7 +99,8 @@ public class AIRecommendationServiceImp implements AIRecommendationService {
 
         String result = appConfig.getAiMatchingResult(prompt);
 
-        return result.contains("yes") || result.contains("phù hợp") || result.contains("match"); //AI no loc ve 1 doan text, kiem tra xem doan text do co "dong y" giua cac truong cua seeker va giver khong
+        logging.info("Prompt received: " + prompt);
+        return result.toLowerCase().contains("yes") || result.toLowerCase().contains("phù hợp") || result.toLowerCase().contains("match"); //AI no loc ve 1 doan text, kiem tra xem doan text do co "dong y" giua cac truong cua seeker va giver khong
     }
 
     //tao prompt xong gui len AI loc

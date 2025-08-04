@@ -1,5 +1,6 @@
 package com.CareGenius.book.Model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,6 +44,7 @@ public class CareSeeker {
     private User user;
 
     @OneToMany(mappedBy = "careSeeker", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<AIRecommendation> recommendations;
 
 }
