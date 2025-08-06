@@ -47,4 +47,7 @@ public class CareSeeker {
     @JsonManagedReference
     private List<AIRecommendation> recommendations;
 
+    @OneToMany(mappedBy = "careSeeker", cascade = CascadeType.ALL)
+    private List<Booking> bookings;
+
 }

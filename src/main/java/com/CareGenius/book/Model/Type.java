@@ -2,7 +2,9 @@ package com.CareGenius.book.Model;
 
 public enum Type {
     MATCH_FOUND,
+    BOOKING_PENDING,
     BOOKING_CONFIRMED,
+    BOOKING_COMPLETED,
     BOOKING_CANCELED,
     NEW_MESSAGE,
     REVIEW_RECEIVED,
