@@ -22,6 +22,5 @@ public class NotificationsDto {
 
     private LocalDate createdAt;
 
-    List<CareGiverResponseDto> careGiverResponseDtos;
-
+    private List<?> payload;
 }
