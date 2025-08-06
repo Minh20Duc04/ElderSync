@@ -35,7 +35,7 @@ public class CareSeekerServiceImp implements CareSeekerService {
         //neu tao seeker phu hop voi giver luon thi matching
         if(!careGiversRecommend.isEmpty()){
             StringBuilder message = new StringBuilder("Tìm thấy " + careGiversRecommend.size() + " CareGiver phù hợp với yêu cầu của bạn: \n");
-            careGiversRecommend.forEach(cgr -> message
+            careGiversRecommend.forEach((cgr) -> message
                     .append("➤ UID: ").append(cgr.getUid()).append("\n")
                     .append("   Họ tên: ").append(cgr.getUser().getFullName()).append("\n")
                     .append("   SĐT: ").append(cgr.getPhoneNumber()).append("\n")
