@@ -5,6 +5,8 @@ import com.CareGenius.book.Dto.NotificationsDto;
 import com.CareGenius.book.Model.CareGiver;
 import com.CareGenius.book.Model.Notifications;
 import com.CareGenius.book.Model.User;
+import com.CareGenius.book.Repository.CareGiverRepository;
+import com.CareGenius.book.Repository.CareSeekerRepository;
 import com.CareGenius.book.Repository.NotificationRepository;
 import com.CareGenius.book.Service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 public class NotificationServiceImp implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final CareSeekerRepository careSeekerRepository;
+    private final CareGiverRepository careGiverRepository;
 
     @Override
     public List<NotificationsDto> getNotification(User userDB) {
@@ -33,13 +37,14 @@ public class NotificationServiceImp implements NotificationService {
     private NotificationsDto buildDtoByType(Notifications ntf, User userDB) {
         String type = ntf.getType().name();
         LocalDate createdAt = ntf.getCreatedAt();
+        String message = ntf.getMessage();
 
         switch (ntf.getType()) {
             case MATCH_FOUND:
                 // Nếu là CareSeeker thì lấy danh sách CareGiver được match
                 List<CareGiverResponseDto> careGiverResponseDtos = null;
 
-                if(userDB.getCareSeeker() != null && userDB.getCareSeeker().getRecommendations() != null) {
+                if (userDB.getCareSeeker() != null && userDB.getCareSeeker().getRecommendations() != null) {
                     careGiverResponseDtos = userDB.getCareSeeker().getRecommendations().stream()
                             .map((rec) -> {
                                 CareGiver cgd = rec.getCareGiver();
@@ -57,68 +62,22 @@ public class NotificationServiceImp implements NotificationService {
                 }
 
                 return new NotificationsDto(
-                        "Tôi tìm thấy các dữ liệu sau cho bạn:",
+                        "Tôi tìm thấy các dữ liệu sau cho bạn: ",
                         type,
                         createdAt,
                         careGiverResponseDtos
                 );
 
+            case BOOKING_PENDING:
             case BOOKING_CONFIRMED:
-                //làm cho Booking sau này
-                return new NotificationsDto(
-                        "Lịch hẹn của bạn đã được xác nhận.",
-                        type,
-                        createdAt,
-                        null
-                );
-
             case BOOKING_CANCELED:
-                return new NotificationsDto(
-                        "Lịch hẹn của bạn đã bị hủy.",
-                        type,
-                        createdAt,
-                        null
-                );
-
             case NEW_MESSAGE:
-                // làm cho message sau này
-                return new NotificationsDto(
-                        "Bạn có tin nhắn mới.",
-                        type,
-                        createdAt,
-                        null
-                );
-
             case REVIEW_RECEIVED:
-                // làm cho review sau này
-                return new NotificationsDto(
-                        "Bạn vừa nhận được đánh giá từ người dùng.",
-                        type,
-                        createdAt,
-                        null
-                );
-
             case PAYMENT_RECEIVED:
-                // làm cho booking sau này
-                return new NotificationsDto(
-                        "Bạn đã nhận được một khoản thanh toán.",
-                        type,
-                        createdAt,
-                        null
-                );
-
             case TRAINING_AVAILABLE:
-                // làm cho training sau này
-                return new NotificationsDto(
-                        "Một khóa đào tạo mới đang sẵn có cho bạn.",
-                        type,
-                        createdAt,
-                        null
-                );
-
             default:
                 return new NotificationsDto(
-                        "Thông báo không xác định",
+                        message != null ? message : "Thông báo không xác định",
                         type,
                         createdAt,
                         null

@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface CareGiverRepository extends JpaRepository<CareGiver, String> {
 
     boolean existsByPhoneNumber(String phoneNumber);
+
+    boolean existsByUserUid(String uid);
 }

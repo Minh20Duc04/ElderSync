@@ -40,17 +40,17 @@ public class SecurityConfig {
                                 "/user/forgot-password/**"
                         ).permitAll()
 
-                        .requestMatchers("/care-seekers/create")
-                        .hasRole("USER")
-
                         .requestMatchers("/ai-recommend/match",
-                                "/notification/getAll")
+                                "/notification/getAll",
+                                "/booking/create")
                         .hasRole("SEEKER")
+
+                        .requestMatchers("/care-seekers/create")
+                        .hasAnyRole("USER", "SEEKER")
 
                         .requestMatchers("/caregivers/create",
                                 "/caregivers/linkImage")
                         .hasRole("ADMIN")
-
 
 
                         .anyRequest().authenticated()

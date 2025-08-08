@@ -1,5 +1,6 @@
 package com.CareGenius.book.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -48,6 +49,7 @@ public class CareSeeker {
     private List<AIRecommendation> recommendations;
 
     @OneToMany(mappedBy = "careSeeker", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Booking> bookings;
 
 }

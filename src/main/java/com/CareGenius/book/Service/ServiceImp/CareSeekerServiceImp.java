@@ -8,14 +8,19 @@ import com.CareGenius.book.Repository.NotificationRepository;
 import com.CareGenius.book.Repository.UserRepository;
 import com.CareGenius.book.Service.AIRecommendationService;
 import com.CareGenius.book.Service.CareSeekerService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-
+@Slf4j
 public class CareSeekerServiceImp implements CareSeekerService {
 
     private final CareSeekerRepository careSeekerRepository;
@@ -23,12 +28,30 @@ public class CareSeekerServiceImp implements CareSeekerService {
     private final AIRecommendationService aiRecommendationService;
     private final NotificationRepository notificationRepository;
 
-    @Override
-    public CareSeekerResponseDto createCareSeeker(User userDB, CareSeekerRequestDto careSeekerRequestDto) {
-        CareSeeker careSeeker = mapToCareSeeker(userDB, careSeekerRequestDto);
-        userDB.setRole(Role.SEEKER);
-        userRepository.save(userDB);
 
+    @Override
+    @Transactional
+    public CareSeekerResponseDto createCareSeeker(User userDB, CareSeekerRequestDto careSeekerRequestDto) { //truong hop seeker muon dat dich vu lai
+        CareSeeker careSeeker = null;
+
+        if(userDB.getRole() != Role.SEEKER){
+            careSeeker = mapToCareSeeker(userDB, careSeekerRequestDto);
+            userDB.setRole(Role.SEEKER);
+        } else{ //dob, careneed, heath, preferGen, phoneNum
+            careSeeker = careSeekerRepository.findByUserUid(userDB.getUid());
+            if(careSeeker == null){
+                careSeeker = mapToCareSeeker(userDB, careSeekerRequestDto); //truong hop neu xoa seeker cu ma ko set lai role thi phai map cai moi
+            }
+
+            careSeeker.setDob(careSeekerRequestDto.getDob());
+            careSeeker.setCareNeedsDescription(new HashSet<>(careSeekerRequestDto.getCareNeedsDescription()));
+            careSeeker.setHealthConditions(new HashSet<>(careSeekerRequestDto.getHealthConditions()));
+            careSeeker.setPreferredGiverGender(careSeekerRequestDto.getPreferredGiverGender());
+            careSeeker.setPhoneNumber(careSeekerRequestDto.getPhoneNumber());
+
+        }
+        userRepository.save(userDB);
+        //neu seeker da co thi user
         careSeekerRepository.save(careSeeker);
 
         List<CareGiver> careGiversRecommend = aiRecommendationService.AIRecommendationMatching(careSeeker);
@@ -67,6 +90,7 @@ public class CareSeekerServiceImp implements CareSeekerService {
 
     private CareSeekerResponseDto mapToSeekerResponseDto(CareSeeker careSeeker){
         User user = careSeeker.getUser();
+        System.out.println(careSeeker.getHealthConditions() + " " + careSeeker.getCareNeedsDescription());
         return new CareSeekerResponseDto(
                 careSeeker.getUid(),
                 user.getFullName(),
