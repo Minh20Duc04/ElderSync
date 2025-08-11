@@ -12,4 +12,6 @@ public interface UserService {
     UserResponseDto authenticateUser(UserDto userDto);
 
     String sendResetPasswordEmail(String email);
+
+    String deleteUserByUid(String userUid);
 }

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface CareSeekerRepository extends JpaRepository<CareSeeker, String> {
 
     CareSeeker findByUserUid(String uid);
+
+    CareSeeker findByUser(User userDB);
 }

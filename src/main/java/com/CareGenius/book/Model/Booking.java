@@ -29,7 +29,7 @@ public class Booking {
 
     //careLocation, fromDate, duration, start and end time, String giverUid, note, payment
 
-    private LocalDate fromDate;
+    private LocalDate fromDate; //so luong booking 1 ngay va phai theo lich cua giver
 
     private Integer duration;
 

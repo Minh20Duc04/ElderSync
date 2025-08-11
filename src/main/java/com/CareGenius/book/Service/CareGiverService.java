@@ -14,4 +14,6 @@ public interface CareGiverService {
     CareGiverResponseDto getByUid(String uid);
 
     List<CareGiverResponseDto> getAll();
+
+    String deleteGiverByUid(String giverUid);
 }

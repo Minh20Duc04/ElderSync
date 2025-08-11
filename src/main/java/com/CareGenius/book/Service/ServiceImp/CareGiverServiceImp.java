@@ -95,6 +95,12 @@ public class CareGiverServiceImp implements CareGiverService {
                 .map(this::mapToCareGiverSimpleDto).collect(Collectors.toList());
     }
 
+    @Override
+    public String deleteGiverByUid(String giverUid) {
+        careGiverRepository.deleteById(giverUid);
+        return "Delete giver successfully !";
+    }
+
     private CareGiverResponseDto mapToCareGiverSimpleDto(CareGiver careGiverDB) {
         Set<String> skills = new HashSet<>();
 

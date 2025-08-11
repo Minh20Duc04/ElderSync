@@ -36,4 +36,8 @@ public class UserController {
         return ResponseEntity.ok(userService.sendResetPasswordEmail(email));
     }
 
+    @DeleteMapping("/delete/{userUid}")
+    public ResponseEntity<String> deleteGiverByUid (@PathVariable("userUid") String userUid){
+        return ResponseEntity.ok(userService.deleteUserByUid(userUid));
+    }
 }

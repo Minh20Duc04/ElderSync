@@ -48,8 +48,14 @@ public class SecurityConfig {
                         .requestMatchers("/care-seekers/create")
                         .hasAnyRole("USER", "SEEKER")
 
+                        .requestMatchers("/booking/decide")
+                        .hasAnyRole("SEEKER", "GIVER")
+
                         .requestMatchers("/caregivers/create",
-                                "/caregivers/linkImage")
+                                "/caregivers/linkImage",
+                                "/caregivers/delete/**",
+                                "/user/delete/**"
+                        )
                         .hasRole("ADMIN")
 
 

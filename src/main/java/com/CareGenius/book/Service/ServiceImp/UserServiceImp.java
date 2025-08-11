@@ -7,6 +7,7 @@ import com.CareGenius.book.Model.User;
 import com.CareGenius.book.Repository.UserRepository;
 import com.CareGenius.book.Service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
@@ -90,6 +93,15 @@ public class UserServiceImp implements UserService {
         sendEmail(email, stringBuild.toString());
 
         return "Please check your email to obtain your new password";
+    }
+
+    @Override
+    @Transactional
+    public String deleteUserByUid(String userUid) {
+        User userDB = userRepository.findById(userUid).orElseThrow(()-> new IllegalArgumentException("User not found"));
+        log.info("Found this :" +userDB.getUid());
+        userRepository.delete(userDB);
+        return "Delete user successfully!";
     }
 
     private void sendEmail(String email, String newPassword){
