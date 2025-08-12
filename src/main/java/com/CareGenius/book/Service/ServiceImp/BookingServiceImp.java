@@ -21,10 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -124,6 +121,16 @@ public class BookingServiceImp implements BookingService {
         }
 
         return "Updated this booking successfully";
+    }
+
+    @Override
+    public List<BookingDto> getAll(User userDB) {
+        List<BookingDto> bookingDtos = null;
+        if(careSeekerRepository.findByUser(userDB) != null){
+            CareSeeker careSeekerDB = careSeekerRepository.findByUser(userDB);
+            List<Booking> bookings = bookingRepository.findBy
+        }
+
     }
 
 

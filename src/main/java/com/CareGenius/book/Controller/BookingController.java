@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/booking")
 @RequiredArgsConstructor
@@ -32,6 +34,11 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.decideBooking(userDB, bookingDecision));
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<List<BookingDto>> getALlBooking (Authentication auth){
+        User userDB = (User) auth.getPrincipal();
+        return ResponseEntity.ok(bookingService.getAll(userDB));
+    }
 
 
 }
