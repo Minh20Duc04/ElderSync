@@ -37,18 +37,19 @@ public class SecurityConfig {
                                 "/user/login",
                                 "/caregivers/getAll",
                                 "/caregivers/getByUid/**",
-                                "/user/forgot-password/**"
+                                "/user/forgot-password/**",
+                                "/test-momo"
                         ).permitAll()
 
                         .requestMatchers("/ai-recommend/match",
-                                "/notification/getAll",
                                 "/booking/create")
                         .hasRole("SEEKER")
 
                         .requestMatchers("/care-seekers/create")
                         .hasAnyRole("USER", "SEEKER")
 
-                        .requestMatchers("/booking/decide")
+                        .requestMatchers("/booking/decide",
+                                "/notification/getAll")
                         .hasAnyRole("SEEKER", "GIVER")
 
                         .requestMatchers("/caregivers/create",

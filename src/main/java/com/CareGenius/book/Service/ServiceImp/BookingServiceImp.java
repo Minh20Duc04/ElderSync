@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.util.Base64;
 import java.util.HashMap;
@@ -29,7 +30,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 
-
 public class BookingServiceImp implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -38,6 +38,7 @@ public class BookingServiceImp implements BookingService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
+    private final MomoService momoService;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
@@ -50,11 +51,11 @@ public class BookingServiceImp implements BookingService {
         CareSeeker careSeekerDB = careSeekerRepository.findByUserUid(seekerUserDB.getUid());
 
         DayOfWeek dayOfFromDate = bookingDto.getFromDate().getDayOfWeek();
-        if(!careGiverDB.getSchedule().getDayOfWeeks().contains(dayOfFromDate)){
+        if (!careGiverDB.getSchedule().getDayOfWeeks().contains(dayOfFromDate)) {
             throw new IllegalArgumentException("Invalid booking date ah right ?");
         }
         long countBook = bookingRepository.countByCareGiverAndFromDate(careGiverDB, bookingDto.getFromDate());
-        if(countBook > 5){
+        if (countBook > 5) {
             throw new IllegalArgumentException("Today the giver's schedule is full ");
         }
 
@@ -113,13 +114,12 @@ public class BookingServiceImp implements BookingService {
             notificationRepository.save(Notifications.builder()
                     .type(Type.BOOKING_CONFIRMED)
                     .user(bookingDB.getCareSeeker().getUser()) // lấy từ booking luôn
-                    .message("Booking của bạn đã được Giver xác nhận thành công, link họp: "
-                            + bookingDB.getMeetingLink())
+                    .message("Booking của bạn đã được Giver xác nhận thành công. Vui lòng kiểm tra email để xem thông tin chi tiết về lịch họp và phương thức thanh toán.")
                     .build());
 
             sendEmail(bookingDB.getCareSeeker().getUser().getEmail(), bookingDB);
 
-        } else if (bookingDecision.getType().equals(Type.BOOKING_CANCELED)) {
+        } else if (bookingDecision.getType().equals(Type.BOOKING_CANCELED)) { //seeker và giver đều xóa được booking nếu muốn
             bookingRepository.delete(bookingDB);
         }
 
@@ -160,8 +160,8 @@ public class BookingServiceImp implements BookingService {
     private void sendEmail(String email, Booking booking) throws Exception {
         String momoPaymentLink = null;
 
-        if(booking.getPayment().equals(Payment.ONLINE)){
-            momoPaymentLink = createSandboxMomoLink(booking.getId(), booking.getCareGiver().getFee().toString());
+        if (booking.getPayment().equals(Payment.ONLINE)) {
+            momoPaymentLink = momoService.createSandboxMomoLink(booking.getId(), booking.getCareGiver().getFee().toString());
         }
 
         String subject = "ElderSync - Xác nhận booking #" + booking.getId();
@@ -178,7 +178,7 @@ public class BookingServiceImp implements BookingService {
                 booking.getFromDate(),
                 booking.getStartTime(),
                 booking.getEndTime(),
-                booking.getPayment() + ((momoPaymentLink.isEmpty()) ? " " : momoPaymentLink),
+                booking.getPayment() + " tại :" +((momoPaymentLink.isEmpty()) ? " " : momoPaymentLink),
                 booking.getMeetingLink()
         );
 
@@ -189,77 +189,5 @@ public class BookingServiceImp implements BookingService {
         message.setFrom(fromEmail);
 
         mailSender.send(message);
-    }
-
-    public String createSandboxMomoLink(Long bookingId, String amount) throws Exception {
-        String endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-
-        String partnerCode = "MOMOXXXXX"; // từ momo
-        String accessKey = "F8BBA842ECF85";
-        String secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
-
-        String redirectUrl = "https://yourdomain.com/payment-success";
-        String ipnUrl = "https://yourdomain.com/payment-ipn";
-        String orderId = UUID.randomUUID().toString();
-        String requestId = UUID.randomUUID().toString();
-        String orderInfo = "Thanh toán booking #" + bookingId;
-        String requestType = "captureWallet";
-        String extraData = "";
-
-        // Raw data for HMAC SHA256
-        String rawHash = "accessKey=" + accessKey +
-                "&amount=" + amount +
-                "&extraData=" + extraData +
-                "&ipnUrl=" + ipnUrl +
-                "&orderId=" + orderId +
-                "&orderInfo=" + orderInfo +
-                "&partnerCode=" + partnerCode +
-                "&redirectUrl=" + redirectUrl +
-                "&requestId=" + requestId +
-                "&requestType=" + requestType;
-
-        // Tạo chữ ký
-        String signature = hmacSHA256(rawHash, secretKey);
-
-        // Build JSON body
-        Map<String, String> payload = new HashMap<>();
-        payload.put("partnerCode", partnerCode);
-        payload.put("accessKey", accessKey);
-        payload.put("requestId", requestId);
-        payload.put("amount", amount);
-        payload.put("orderId", orderId);
-        payload.put("orderInfo", orderInfo);
-        payload.put("redirectUrl", redirectUrl);
-        payload.put("ipnUrl", ipnUrl);
-        payload.put("extraData", extraData);
-        payload.put("requestType", requestType);
-        payload.put("signature", signature);
-        payload.put("lang", "vi");
-
-        // Gửi POST đến MOMO
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(endpoint))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(payload)))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        // Trích xuất payUrl
-        JsonNode jsonNode = new ObjectMapper().readTree(response.body());
-        return jsonNode.get("payUrl").asText(); // Đây là đường dẫn đến sandbox momo
-    }
-
-    private String hmacSHA256(String data, String key) {
-        try {
-            Mac hmacSha256 = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "HmacSHA256");
-            hmacSha256.init(secretKeySpec);
-            byte[] hash = hmacSha256.doFinal(data.getBytes());
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to calculate hmac-sha256", e);
-        }
     }
 }
