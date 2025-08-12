@@ -128,7 +128,8 @@ public class BookingServiceImp implements BookingService {
         List<BookingDto> bookingDtos = null;
         if(careSeekerRepository.findByUser(userDB) != null){
             CareSeeker careSeekerDB = careSeekerRepository.findByUser(userDB);
-            List<Booking> bookings = bookingRepository.findBy
+            //List<Booking> bookings = bookingRepository. lat lam sau
+            CareGiver careGiverDB;
         }
 
     }
