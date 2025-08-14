@@ -67,4 +67,7 @@ public class Booking {
     @JsonIgnore
     private List<Tasks> tasks;
 
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Reviews> reviews;
 }

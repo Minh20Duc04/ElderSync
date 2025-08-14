@@ -42,11 +42,16 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/swagger-resources/**"
+                                "/swagger-resources/**",
+                                "/reviews/getByGiverId/**"
                         ).permitAll()
 
                         .requestMatchers("/ai-recommend/match",
-                                "/booking/create")
+                                "/booking/create",
+                                "/reviews/create",
+                                "/reviews/updateByReviewId/**",
+                                "/reviews/deleteById/**"
+                        )
                         .hasRole("SEEKER")
 
                         .requestMatchers("/care-seekers/create")
