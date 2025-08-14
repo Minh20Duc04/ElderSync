@@ -14,4 +14,6 @@ public interface BookingService {
     String decideBooking(User userDB, BookingDecision bookingDecision) throws Exception;
 
     List<BookingDto> getAll(User userDB);
+
+    BookingDto getById(Long bookingId);
 }

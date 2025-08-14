@@ -1,6 +1,7 @@
 package com.CareGenius.book.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Setter
@@ -60,5 +62,9 @@ public class Booking {
 
     @UpdateTimestamp
     private LocalDate updatedAt;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Tasks> tasks;
 
 }

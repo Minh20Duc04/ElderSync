@@ -40,5 +40,9 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getAll(userDB));
     }
 
+    @GetMapping("getById/{id}")
+    public ResponseEntity<BookingDto> getById (@PathVariable("id") Long bookingId){
+        return ResponseEntity.ok(bookingService.getById(bookingId));
+    }
 
 }

@@ -38,7 +38,11 @@ public class SecurityConfig {
                                 "/caregivers/getAll",
                                 "/caregivers/getByUid/**",
                                 "/user/forgot-password/**",
-                                "/test-momo"
+                                "/test-momo",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**"
                         ).permitAll()
 
                         .requestMatchers("/ai-recommend/match",
@@ -49,13 +53,25 @@ public class SecurityConfig {
                         .hasAnyRole("USER", "SEEKER")
 
                         .requestMatchers("/booking/decide",
-                                "/notification/getAll")
+                                "/notification/getAll",
+                                "/booking/getAll",
+                                "/booking/getById/**",
+                                "/tasks/getById/**",
+                                "/tasks/getAllByBooking"
+                        )
                         .hasAnyRole("SEEKER", "GIVER")
+
+                        .requestMatchers("/tasks/create",
+                                "/tasks/update/**",
+                                "/tasks/delete/**"
+                                )
+                        .hasRole("GIVER")
 
                         .requestMatchers("/caregivers/create",
                                 "/caregivers/linkImage",
                                 "/caregivers/delete/**",
-                                "/user/delete/**"
+                                "/user/delete/**",
+                                "/tasks/getAll"
                         )
                         .hasRole("ADMIN")
 

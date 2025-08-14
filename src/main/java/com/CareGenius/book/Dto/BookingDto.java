@@ -17,6 +17,8 @@ import java.time.LocalTime;
 
 public class BookingDto {
 
+    private Long id;
+
     private Carelocation carelocation;
 
     private LocalDate fromDate;
@@ -27,10 +29,25 @@ public class BookingDto {
 
     private LocalTime endTime;
 
+    private String type;
+
     private String note;
 
     private Payment payment;
 
     private String careGiverUid;
 
+    private String careGiverName;
+
+    private String careGiverEmail;
+
+    private String careGiverPhone;
+
+    private String careSeekerId;
+
+    private String careSeekerName;
+
+    private String careSeekerEmail;
+
+    private String careSeekerPhone;
 }

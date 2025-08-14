@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -125,13 +126,22 @@ public class BookingServiceImp implements BookingService {
 
     @Override
     public List<BookingDto> getAll(User userDB) {
-        List<BookingDto> bookingDtos = null;
-        if(careSeekerRepository.findByUser(userDB) != null){
-            CareSeeker careSeekerDB = careSeekerRepository.findByUser(userDB);
-            //List<Booking> bookings = bookingRepository. lat lam sau
-            CareGiver careGiverDB;
+        CareSeeker careSeekerDB = careSeekerRepository.findByUser(userDB);
+        if(careSeekerDB != null){
+            return bookingRepository.findByCareSeeker(careSeekerDB).stream().map(this::mapToBookingDto).collect(Collectors.toList());
         }
 
+        CareGiver careGiverDB = careGiverRepository.findByUser(userDB);
+        if(careGiverDB != null){
+            return bookingRepository.findByCareGiver(careGiverDB).stream().map(this::mapToBookingDto).collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
+    }
+
+    @Override
+    public BookingDto getById(Long bookingId) {
+        return mapToBookingDto(bookingRepository.findById(bookingId).orElseThrow(()-> new IllegalArgumentException("Not found booking")));
     }
 
 
@@ -154,19 +164,28 @@ public class BookingServiceImp implements BookingService {
 
     private BookingDto mapToBookingDto(Booking booking) {
         return new BookingDto(
+                booking.getId(),
                 booking.getCareLocation(),
                 booking.getFromDate(),
                 booking.getDuration(),
                 booking.getStartTime(),
                 booking.getEndTime(),
+                booking.getType().name(),
                 booking.getNote(),
                 booking.getPayment(),
-                booking.getCareGiver().getUid()
+                booking.getCareGiver().getUid(),
+                booking.getCareGiver().getUser().getFullName(),
+                booking.getCareGiver().getUser().getEmail(),
+                booking.getCareGiver().getPhoneNumber(),
+                booking.getCareSeeker().getUid(),
+                booking.getCareSeeker().getUser().getFullName(),
+                booking.getCareSeeker().getUser().getEmail(),
+                booking.getCareSeeker().getPhoneNumber()
         );
     }
 
     private void sendEmail(String email, Booking booking) throws Exception {
-        String momoPaymentLink = null;
+        String momoPaymentLink = "";
 
         if (booking.getPayment().equals(Payment.ONLINE)) {
             momoPaymentLink = momoService.createSandboxMomoLink(booking.getId(), booking.getCareGiver().getFee().toString());
@@ -186,7 +205,7 @@ public class BookingServiceImp implements BookingService {
                 booking.getFromDate(),
                 booking.getStartTime(),
                 booking.getEndTime(),
-                booking.getPayment() + " tại :" +((momoPaymentLink.isEmpty()) ? " " : momoPaymentLink),
+                booking.getPayment() + " tại :" +((momoPaymentLink.isEmpty()) ? " chỗ" : momoPaymentLink),
                 booking.getMeetingLink()
         );
 
