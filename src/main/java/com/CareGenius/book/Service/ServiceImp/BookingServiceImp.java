@@ -119,8 +119,10 @@ public class BookingServiceImp implements BookingService {
 
         } else if (bookingDecision.getType().equals(Type.BOOKING_CANCELED)) { //seeker và giver đều xóa được booking nếu muốn
             bookingRepository.delete(bookingDB);
+        } else {
+            bookingDB.setType(bookingDecision.getType());
+            bookingRepository.save(bookingDB);
         }
-
         return "Updated this booking successfully";
     }
 

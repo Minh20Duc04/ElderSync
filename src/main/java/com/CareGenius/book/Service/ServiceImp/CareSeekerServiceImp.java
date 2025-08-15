@@ -3,10 +3,12 @@ package com.CareGenius.book.Service.ServiceImp;
 import com.CareGenius.book.Dto.CareSeekerRequestDto;
 import com.CareGenius.book.Dto.CareSeekerResponseDto;
 import com.CareGenius.book.Model.*;
+import com.CareGenius.book.Repository.BookingRepository;
 import com.CareGenius.book.Repository.CareSeekerRepository;
 import com.CareGenius.book.Repository.NotificationRepository;
 import com.CareGenius.book.Repository.UserRepository;
 import com.CareGenius.book.Service.AIRecommendationService;
+import com.CareGenius.book.Service.BookingService;
 import com.CareGenius.book.Service.CareSeekerService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class CareSeekerServiceImp implements CareSeekerService {
     private final UserRepository userRepository;
     private final AIRecommendationService aiRecommendationService;
     private final NotificationRepository notificationRepository;
-
+    private final BookingRepository bookingRepository;
 
     @Override
     @Transactional
@@ -75,6 +78,30 @@ public class CareSeekerServiceImp implements CareSeekerService {
         }
 
         return mapToSeekerResponseDto(careSeeker);
+    }
+
+    @Override
+    public List<CareSeekerResponseDto> getAllCareSeeker() {
+        return careSeekerRepository.findAll().stream().map(this::mapToSeekerResponseDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public CareSeekerResponseDto getCareSeekerById(User userDB, String seekerUid) {
+        //seeker xem profile phải đúng uid, giver muốn xem seeker thì phải có booking đã
+        boolean isSeeker = userDB.getCareSeeker() != null && userDB.getCareSeeker().getUid().equals(seekerUid);
+
+        boolean isGiverBooking = userDB.getCareGiver() != null && bookingRepository.existsByCareSeeker_UidAndCareGiver_Uid(seekerUid, userDB.getCareGiver().getUid());
+
+        if(!isSeeker && !isGiverBooking && !userDB.getRole().equals(Role.ADMIN)){
+            throw new RuntimeException("Don't snoop on others !");
+        }
+        return mapToSeekerResponseDto(careSeekerRepository.findById(seekerUid).orElseThrow(()-> new IllegalArgumentException("Not found seeker")));
+    }
+
+    @Override
+    public String deleteCareSeekerById(String seekerUid) {
+        careSeekerRepository.deleteById(seekerUid);
+        return "Deleted seeker with uid: " + seekerUid;
     }
 
     private CareSeeker mapToCareSeeker(User userDB, CareSeekerRequestDto careSeekerRequestDto) {

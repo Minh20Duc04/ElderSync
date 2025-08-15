@@ -8,4 +8,6 @@ import java.util.List;
 public interface NotificationService {
 
     List<NotificationsDto> getNotification(User userDB);
+
+    void requestEmergency(User userDB);
 }

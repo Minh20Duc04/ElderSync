@@ -4,7 +4,9 @@ import com.CareGenius.book.Dto.CareGiverResponseDto;
 import com.CareGenius.book.Dto.NotificationsDto;
 import com.CareGenius.book.Model.CareGiver;
 import com.CareGenius.book.Model.Notifications;
+import com.CareGenius.book.Model.Type;
 import com.CareGenius.book.Model.User;
+import com.CareGenius.book.Repository.BookingRepository;
 import com.CareGenius.book.Repository.CareGiverRepository;
 import com.CareGenius.book.Repository.CareSeekerRepository;
 import com.CareGenius.book.Repository.NotificationRepository;
@@ -24,6 +26,7 @@ public class NotificationServiceImp implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final CareSeekerRepository careSeekerRepository;
     private final CareGiverRepository careGiverRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     public List<NotificationsDto> getNotification(User userDB) {
@@ -32,6 +35,32 @@ public class NotificationServiceImp implements NotificationService {
         return notifiDB.stream()
                 .map((ntf) -> buildDtoByType(ntf, userDB))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void requestEmergency(User userDB) {
+        if(userDB.getCareSeeker() == null) {
+            throw new RuntimeException("You are not CareSeeker !");
+        }
+        String seekerUid = userDB.getCareSeeker().getUid();
+
+        // Các giver chăm sic seeker này
+        List<User> giversDB = bookingRepository.findAllCareGiverUsersBySeekerUid(seekerUid);
+
+        if (giversDB.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy CareGiver nào từng làm việc với CareSeeker này");
+        }
+
+        // Gửi Notify cho tất cả giver
+        for (User caregiverUser : giversDB) {
+            Notifications noti = Notifications.builder()
+                    .message("Yêu cầu khẩn cấp từ " + userDB.getUsername())
+                    .type(Type.NEW_MESSAGE)
+                    .user(caregiverUser)
+                    .build();
+
+            notificationRepository.save(noti);
+        }
     }
 
     private NotificationsDto buildDtoByType(Notifications ntf, User userDB) {

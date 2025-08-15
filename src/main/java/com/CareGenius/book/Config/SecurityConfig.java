@@ -50,7 +50,8 @@ public class SecurityConfig {
                                 "/booking/create",
                                 "/reviews/create",
                                 "/reviews/updateByReviewId/**",
-                                "/reviews/deleteById/**"
+                                "/reviews/deleteById/**",
+                                "/notification/emergency"
                         )
                         .hasRole("SEEKER")
 
@@ -76,10 +77,14 @@ public class SecurityConfig {
                                 "/caregivers/linkImage",
                                 "/caregivers/delete/**",
                                 "/user/delete/**",
-                                "/tasks/getAll"
+                                "/tasks/getAll",
+                                "/care-seekers/getAll",
+                                "/care-seekers/deleteById/**"
                         )
                         .hasRole("ADMIN")
 
+                        .requestMatchers("/care-seekers/getById/**")
+                        .hasAnyRole("SEEKER", "GIVER", "ADMIN")
 
                         .anyRequest().authenticated()
                 );

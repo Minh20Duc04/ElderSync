@@ -28,7 +28,7 @@ public class BookingController {
     }
 
     //update de confrim, getAll
-    @PutMapping("/decide")
+    @PutMapping("/decide") //CRUD
     public ResponseEntity<String> createBooking (Authentication auth, @RequestBody BookingDecision bookingDecision) throws Exception {
         User userDB = (User) auth.getPrincipal();
         return ResponseEntity.ok(bookingService.decideBooking(userDB, bookingDecision));
