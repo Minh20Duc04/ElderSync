@@ -8,6 +8,7 @@ import com.CareGenius.book.Service.CareGiverService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -99,6 +100,11 @@ public class CareGiverServiceImp implements CareGiverService {
     public String deleteGiverByUid(String giverUid) {
         careGiverRepository.deleteById(giverUid);
         return "Delete giver successfully !";
+    }
+
+    @Override
+    public List<CareGiverResponseDto> searchByName(String name, Pageable pageable) {
+        return careGiverRepository.findByUser_FullNameContainingIgnoreCase(name, pageable).getContent().stream().map(this::mapToCareGiverSimpleDto).collect(Collectors.toList());
     }
 
     private CareGiverResponseDto mapToCareGiverSimpleDto(CareGiver careGiverDB) {

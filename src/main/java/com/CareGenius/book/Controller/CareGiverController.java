@@ -5,6 +5,8 @@ import com.CareGenius.book.Dto.CareGiverDto;
 import com.CareGenius.book.Dto.CareGiverResponseDto;
 import com.CareGenius.book.Service.CareGiverService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -44,6 +46,13 @@ public class CareGiverController {
     @DeleteMapping("/delete/{giverUid}")
     public ResponseEntity<String> deleteGiverByUid (@PathVariable("giverUid") String giverUid){
         return ResponseEntity.ok(careGiverService.deleteGiverByUid(giverUid));
+    }
+
+    @GetMapping("/searchByName")
+    public ResponseEntity<List<CareGiverResponseDto>> searchByName (@RequestParam String name,  @RequestParam(defaultValue = "0") int page,
+                                                                    @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page,size);
+        return ResponseEntity.ok(careGiverService.searchByName(name, pageable));
     }
 
 }

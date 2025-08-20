@@ -33,58 +33,68 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         //ko cần role
-                        .requestMatchers("/user/register",
-                                "/user/login",
+                        .requestMatchers(
                                 "/caregivers/getAll",
                                 "/caregivers/getByUid/**",
-                                "/user/forgot-password/**",
+                                "/caregivers/searchByName**",
+                                "/reviews/getByGiverId/**",
                                 "/test-momo",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
+                                "/user/forgot-password/**",
+                                "/user/login",
+                                "/user/register",
                                 "/swagger-ui.html",
+                                "/swagger-ui/**",
                                 "/swagger-resources/**",
-                                "/reviews/getByGiverId/**"
+                                "/v3/api-docs/**"
                         ).permitAll()
 
-                        .requestMatchers("/ai-recommend/match",
+                        // role seeker
+                        .requestMatchers(
+                                "/ai-recommend/match",
                                 "/booking/create",
+                                "/notification/emergency",
                                 "/reviews/create",
-                                "/reviews/updateByReviewId/**",
                                 "/reviews/deleteById/**",
-                                "/notification/emergency"
-                        )
-                        .hasRole("SEEKER")
+                                "/reviews/updateByReviewId/**"
+                        ).hasRole("SEEKER")
 
-                        .requestMatchers("/care-seekers/create")
-                        .hasAnyRole("USER", "SEEKER")
+                        // role giver
+                        .requestMatchers(
+                                "/tasks/create",
+                                "/tasks/delete/**",
+                                "/tasks/update/**"
+                        ).hasRole("GIVER")
 
-                        .requestMatchers("/booking/decide",
-                                "/notification/getAll",
+                        // role admin
+                        .requestMatchers(
+                                "/care-seekers/deleteById/**",
+                                "/care-seekers/getAll",
+                                "/caregivers/create",
+                                "/caregivers/delete/**",
+                                "/caregivers/linkImage",
+                                "/tasks/getAll",
+                                "/user/delete/**"
+                        ).hasRole("ADMIN")
+
+                        // role user, seeker
+                        .requestMatchers(
+                                "/care-seekers/create"
+                        ).hasAnyRole("USER", "SEEKER")
+
+                        // role seeker, giver
+                        .requestMatchers(
+                                "/booking/decide",
                                 "/booking/getAll",
                                 "/booking/getById/**",
-                                "/tasks/getById/**",
-                                "/tasks/getAllByBooking"
-                        )
-                        .hasAnyRole("SEEKER", "GIVER")
+                                "/notification/getAll",
+                                "/tasks/getAllByBooking",
+                                "/tasks/getById/**"
+                        ).hasAnyRole("SEEKER", "GIVER")
 
-                        .requestMatchers("/tasks/create",
-                                "/tasks/update/**",
-                                "/tasks/delete/**"
-                                )
-                        .hasRole("GIVER")
-
-                        .requestMatchers("/caregivers/create",
-                                "/caregivers/linkImage",
-                                "/caregivers/delete/**",
-                                "/user/delete/**",
-                                "/tasks/getAll",
-                                "/care-seekers/getAll",
-                                "/care-seekers/deleteById/**"
-                        )
-                        .hasRole("ADMIN")
-
-                        .requestMatchers("/care-seekers/getById/**")
-                        .hasAnyRole("SEEKER", "GIVER", "ADMIN")
+                        // role seeker, giver, admin
+                        .requestMatchers(
+                                "/care-seekers/getById/**"
+                        ).hasAnyRole("SEEKER", "GIVER", "ADMIN")
 
                         .anyRequest().authenticated()
                 );
