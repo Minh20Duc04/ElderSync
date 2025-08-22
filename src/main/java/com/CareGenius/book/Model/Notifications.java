@@ -2,6 +2,7 @@ package com.CareGenius.book.Model;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,6 +23,7 @@ public class Notifications {
     private Long id;
 
     @Column(length = 10000)
+    @NotBlank(message = "Comment cannot be blank")
     private String message;
 
     @Enumerated(value = EnumType.STRING)

@@ -1,18 +1,36 @@
 package com.CareGenius.book.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
@@ -28,13 +46,21 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String uid;
 
-    @NotBlank(message = "Do not leave empty!")
+    @NotBlank(message = "Full name cannot be empty!")
+    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
     private String fullName;
 
+    @NotBlank(message = "Email cannot be empty!")
+    @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
 
+    @NotBlank(message = "Password cannot be empty!")
+    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
+    @NotBlank(message = "Address cannot be empty!")
+    @Size(max = 500, message = "Address cannot exceed 500 characters")
     private String address;
 
     @Enumerated(value = EnumType.STRING)
