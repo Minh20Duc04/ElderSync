@@ -48,9 +48,10 @@ public class CareSeeker {
     @Past(message = "Date of birth must be in the past")
     private LocalDate dob;
 
-    @NotNull(message = "Phone number is required")
-    @Pattern(regexp = "^[\\+]?[1-9][\\d]{0,15}$", message = "Phone number must be a valid international format")
+    @NotNull
+    @Pattern(regexp = "^(\\+84|0)\\d{9}$", message = "Phone number must be a valid Vietnamese format")
     private String phoneNumber;
+
 
     @ElementCollection(targetClass = CareNeed.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "care_needs_description", joinColumns = @JoinColumn(name = "care_seeker_uid"))

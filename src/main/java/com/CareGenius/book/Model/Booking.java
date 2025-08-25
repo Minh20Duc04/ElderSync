@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import jakarta.validation.constraints.Min;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -49,11 +50,10 @@ public class Booking {
     //careLocation, fromDate, duration, start and end time, String giverUid, note, payment
 
     @NotNull(message = "From date is required")
-    @FutureOrPresent(message = "From date must be today or in the future")
     private LocalDate fromDate; //so luong booking 1 ngay va phai theo lich cua giver
 
     @NotNull(message = "Duration is required")
-    @Size(min = 1, message = "Must being taken care at least 1 day")
+    @Min(value = 1, message = "Must being taken care at least 1 day")
     private Integer duration;
 
     @Enumerated(value = EnumType.STRING)
