@@ -78,9 +78,17 @@ cd backend
 ./mvnw clean install
 ./mvnw spring-boot:run
 ```
+```bash
+- Create a MySQL database (e.g. `banking_app`).
+- Update `application.yml` with credentials & secrets:
+  - Database connection
+  - JWT secret key
+  - API keys (Exchange rate, AI chatbot)
+  - Cloudinary config
+  - Gmail SMTP credentials
+```
 By default, the backend runs on:
 http://localhost:2004
-
 
 ### 3. Frontend (React)
 ```bash
