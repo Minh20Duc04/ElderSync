@@ -79,7 +79,10 @@ cd backend
 ./mvnw spring-boot:run
 ```
 ```bash
-- Create a MySQL database (e.g. `banking_app`).
+
+Then create database:
+
+- Create a MySQL database (e.g. `eldersync`).
 - Update `application.yml` with credentials & secrets:
   - Database connection
   - JWT secret key
