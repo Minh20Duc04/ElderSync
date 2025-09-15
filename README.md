@@ -78,10 +78,9 @@ cd backend
 ./mvnw clean install
 ./mvnw spring-boot:run
 ```
-```bash
-
 Then create database:
 
+```bash
 - Create a MySQL database (e.g. `eldersync`).
 - Update `application.yml` with credentials & secrets:
   - Database connection
