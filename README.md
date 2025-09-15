@@ -70,46 +70,47 @@ ElderSync follows a **client–server architecture**:
 ```bash
 git clone https://github.com/Minh20Duc04/ElderSync.git
 cd ElderSync
+```
+
 ### 2. Backend (Spring Boot)
+```bash
 cd backend
 ./mvnw clean install
 ./mvnw spring-boot:run
-
+```
 By default, the backend runs on:
 http://localhost:2004
 
+
 ### 3. Frontend (React)
+```bash
 cd frontend
 npm install
 npm start
-
+```
 By default, the frontend runs on:
 http://localhost:3000
 
----
-
 ## 📚 API Documentation
 Once the backend is running, the API documentation is available via Swagger UI:
-[http://localhost:2004/swagger-ui.html]
+```bash
+http://localhost:2004/swagger-ui.html
+```
 This provides detailed information about all REST endpoints, request/response schemas, and authentication requirements.
-
----
 
 ## 🤝 Contributing
 We welcome contributions to improve ElderSync!
 
-1. Fork the repository
-2. Create a feature branch:
-   git checkout -b feature/your-feature
-3. Commit your changes:
-   git commit -m "Add new feature: your-feature"
-4. Push the branch:
-   git push origin feature/your-feature
-5. Open a Pull Request
+Fork the repository
 
----
+Create a feature branch:
+git checkout -b feature/your-feature
+Commit your changes:
+git commit -m "Add new feature: your-feature"
+Push the branch:
+git push origin feature/your-feature
+Open a Pull Request
 
 ## 📄 License
 This project is licensed under the MIT License.
 See the LICENSE file for details.
-
